@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Staff Login</title>
+</head>
+<body>
+  <h2>Staff Login</h2>
+  <form id="staffLoginForm">
+    <label>Staff ID:</label>
+    <input type="text" id="staffId" required /><br /><br />
+
+    <label>Password:</label>
+    <input type="password" id="password" required /><br /><br />
+
+    <label>Date of Birth:</label>
+    <input type="date" id="dob" required /><br /><br />
+
+    <label>Enter Captcha:</label>
+    <input type="text" id="captchaInput" required />
+    <span id="captchaValue" style="font-weight: bold;"></span><br /><br />
+
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script>
+    // Generate simple captcha
+    function generateCaptcha() {
+      const captcha = Math.random().toString(36).substring(2, 8);
+      document.getElementById("captchaValue").textContent = captcha;
+      return captcha;
+    }
+
+    let actualCaptcha = generateCaptcha();
+
+    document.getElementById("staffLoginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const staffId = document.getElementById("staffId").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const dob = document.getElementById("dob").value; // Keep as yyyy-MM-dd
+      const captchaInput = document.getElementById("captchaInput").value.trim();
+
+      if (captchaInput !== actualCaptcha) {
+        document.getElementById("message").style.color = "red";
+        document.getElementById("message").textContent = "❌ Invalid Captcha. Please try again.";
+        actualCaptcha = generateCaptcha(); // Regenerate on failure
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:8080/staff/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ staffId, password, dob }),
+        });
+
+        const text = await res.text();
+
+        if (text === "Login Successfull") {
+          document.getElementById("message").style.color = "green";
+          document.getElementById("message").textContent = "✅ Login Successful! Redirecting...";
+          setTimeout(() => {
+            window.location.href = `staff-dashboard.html?staffId=${staffId}`;
+          }, 1000);
+        } else {
+          document.getElementById("message").style.color = "red";
+          document.getElementById("message").textContent = "❌ Invalid Login Credentials.";
+          actualCaptcha = generateCaptcha(); // Regenerate after failed login
+        }
+      } catch (err) {
+        document.getElementById("message").style.color = "red";
+        document.getElementById("message").textContent = "❌ Server error. Please try again later.";
+      }
+    });
+  </script>
+</body>
+</html>

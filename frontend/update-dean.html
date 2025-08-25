@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Update Dean</title>
+</head>
+<body>
+  <h2>Update Dean Details</h2>
+
+  <label>Enter Dean ID:</label>
+  <input type="text" id="deanId" required />
+  <button onclick="fetchdeanDetails()">Fetch Details</button>
+
+  <div id="updateForm" style="display:none; margin-top: 20px;">
+    <h3>Edit Dean Information</h3>
+
+    <label>Username:</label><br>
+    <input type="text" id="username" required /><br><br>
+
+    <label>Password:</label><br>
+    <input type="text" id="password" required /><br><br>
+
+    <button onclick="updateDean()">Update</button>
+  </div>
+
+  <br>
+  <a href="admin-dashboard.html">Back to Admin Dashboard</a>
+
+  <script>
+    async function fetchdeanDetails() {
+      const deanId = document.getElementById("deanId").value.trim();
+      if (!deanId) {
+        alert("Please enter a Dean ID.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:8080/admin/getdean/${deanId}`);
+
+        if (response.status === 404) {
+          alert("Dean not found!");
+          document.getElementById("updateForm").style.display = "none";
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch Dean details.");
+        }
+
+        const dean = await response.json();
+
+        document.getElementById("username").value = dean.username || "";
+        document.getElementById("password").value = dean.password || "";
+
+        document.getElementById("updateForm").style.display = "block";
+      } catch (error) {
+        console.error("Error fetching Dean details:", error);
+        alert("Error fetching Dean details. Check console for more information.");
+      }
+    }
+
+    async function updateDean() {
+      const deanId = document.getElementById("deanId").value.trim();
+
+      const updatedData = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value
+      };
+
+      try {
+        const response = await fetch(`http://localhost:8080/admin/updatedean/${deanId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(updatedData)
+        });
+
+        if (response.ok) {
+          alert("Dean updated successfully!");
+        } else {
+          alert("Failed to update Dean.");
+        }
+      } catch (error) {
+        console.error("Error updating Dean:", error);
+        alert("Error updating Dean.");
+      }
+    }
+  </script>
+</body>
+</html>

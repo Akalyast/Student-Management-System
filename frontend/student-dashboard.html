@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Dashboard</title>
+</head>
+<body>
+  <h2>Welcome to Student Dashboard</h2>
+
+  <p id="welcomeText"></p>
+
+  <ul>
+    <li><a href="#" onclick="loadData('personal')">Personal Information</a></li>
+    <li><a href="#" onclick="loadData('academic')">Academic Information</a></li>
+    <li><a href="#" onclick="loadData('extra')">Extracurricular Activities</a></li>
+  </ul>
+
+  <button onclick="goBack()">Logout</button>
+
+  <div id="dataContainer"></div>
+
+  <script>
+    const registerNumber = new URLSearchParams(window.location.search).get("registerNumber");
+    document.getElementById("welcomeText").textContent = "Logged in as: " + registerNumber;
+
+    function goBack() {
+      window.location.href = "student-login.html";
+    }
+
+    async function loadData(type) {
+      let endpoint = "";
+      let isJson = false;
+
+      if (type === "personal") {
+        endpoint = `http://localhost:8080/student/personal/${registerNumber}`;
+        isJson = true;
+      } else if (type === "academic") {
+        endpoint = `http://localhost:8080/student/academic-info/${registerNumber}`;
+      } else if (type === "extra") {
+        endpoint = `http://localhost:8080/student/extra-info/${registerNumber}`;
+      }
+
+      try {
+        const response = await fetch(endpoint);
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        let html = "<h3>" + type.charAt(0).toUpperCase() + type.slice(1) + " Info</h3><ul>";
+
+        if (isJson) {
+          const data = await response.json();
+          for (const key in data) {
+            html += `<li><strong>${key}</strong>: ${data[key]}</li>`;
+          }
+        } else {
+          const text = await response.text();
+          html += `<li>${text}</li>`;
+        }
+
+        html += "</ul>";
+        document.getElementById("dataContainer").innerHTML = html;
+
+      } catch (error) {
+        console.error("Fetch error:", error);
+        document.getElementById("dataContainer").textContent = "Failed to load data.";
+      }
+    }
+  </script>
+</body>
+</html>

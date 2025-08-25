@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HOD Dashboard</title>
+</head>
+<body>
+
+  <h2>Welcome to HOD Dashboard</h2>
+  <p id="welcomeText"></p>
+
+  <button onclick="viewAllStudents()">View All Students</button>
+  <button onclick="viewAllStaff()">View All Staff</button>
+
+  <div id="resultContainer"></div>
+
+  <script>
+    const username = localStorage.getItem("hodUsername");
+    document.getElementById("welcomeText").innerText = `Logged in as: ${username}`;
+
+    function viewAllStudents() {
+      fetch(`http://localhost:8080/hod/students?username=${username}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length === 0) {
+            document.getElementById("resultContainer").innerHTML = "<p>No students found.</p>";
+            return;
+          }
+          let table = `<table><tr>
+                        <th>Register No</th><th>Name</th><th>DOB</th><th>Department</th>
+                      </tr>`;
+          data.forEach(student => {
+            table += `<tr>
+                        <td>${student.registerNumber}</td>
+                        <td>${student.name}</td>
+                        <td>${student.dob}</td>
+                        <td>${student.department}</td>
+                      </tr>`;
+          });
+          table += "</table>";
+          document.getElementById("resultContainer").innerHTML = table;
+        })
+        .catch(error => {
+          console.error("Error fetching students:", error);
+        });
+    }
+
+    function viewAllStaff() {
+      const department = prompt("Enter department to view staff:");
+      if (!department) return;
+
+      fetch(`http://localhost:8080/hod/staff?department=${department}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length === 0) {
+            document.getElementById("resultContainer").innerHTML = "<p>No staff found.</p>";
+            return;
+          }
+          let table = `<table><tr>
+                        <th>Staff ID</th><th>Name</th><th>Email</th><th>Department</th><th>Classes Handled</th>
+                      </tr>`;
+          data.forEach(staff => {
+            table += `<tr>
+                        <td>${staff.staffId}</td>
+                        <td>${staff.name}</td>
+                        <td>${staff.email}</td>
+                        <td>${staff.department}</td>
+                        <td>${staff.classesHandled}</td>
+                      </tr>`;
+          });
+          table += "</table>";
+          document.getElementById("resultContainer").innerHTML = table;
+        })
+        .catch(error => {
+          console.error("Error fetching staff:", error);
+        });
+    }
+  </script>
+
+</body>
+</html>

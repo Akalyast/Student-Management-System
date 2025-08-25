@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Delete Student</title>
+</head>
+<body>
+  <h2>Delete Student</h2>
+
+  <label>Enter Register Number:
+    <input type="text" id="regNo" />
+  </label>
+  <button onclick="deleteStudent()">Delete</button>
+
+  <p id="message"></p>
+  <a href="admin-dashboard.html">Back to Dashboard</a>
+
+  <script>
+    async function deleteStudent() {
+      const regNo = document.getElementById("regNo").value.trim();
+
+      if (!regNo) {
+        document.getElementById("message").textContent = "❌ Please enter a register number!";
+        return;
+      }
+
+      const response = await fetch(`http://localhost:8080/admin/student/delete/${regNo}`, {
+        method: "DELETE"
+      });
+
+      const result = await response.text();
+
+      if (response.ok) {
+        document.getElementById("message").textContent = "✅ Student deleted successfully!";
+        document.getElementById("message").style.color = "green";
+      } else {
+        document.getElementById("message").textContent = "❌ Error: " + result;
+        document.getElementById("message").style.color = "red";
+      }
+    }
+  </script>
+</body>
+</html>

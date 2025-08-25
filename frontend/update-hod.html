@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Update HOD</title>
+</head>
+<body>
+  <h2>Update HOD Details</h2>
+
+  <label>Enter HOD ID:</label>
+  <input type="text" id="hodId" required />
+  <button onclick="fetchhodDetails()">Fetch Details</button>
+
+  <div id="updateForm" style="display:none; margin-top: 20px;">
+    <h3>Edit HOD Information</h3>
+
+    <label>Username:</label><br>
+    <input type="text" id="username" required /><br><br>
+
+    <label>Password:</label><br>
+    <input type="text" id="password" required /><br><br>
+
+    <label>Department:</label><br>
+    <input type="text" id="department" required /><br><br>
+
+    <button onclick="updateHod()">Update</button>
+  </div>
+
+  <br>
+  <a href="admin-dashboard.html">Back to Admin Dashboard</a>
+
+  <script>
+    async function fetchhodDetails() {
+      const hodId = document.getElementById("hodId").value.trim();
+      if (!hodId) {
+        alert("Please enter a HOD ID.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:8080/admin/gethod/${hodId}`);
+
+        if (response.status === 404) {
+          alert("HOD not found!");
+          document.getElementById("updateForm").style.display = "none";
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch HOD details.");
+        }
+
+        const hod = await response.json();
+
+        document.getElementById("username").value = hod.username || "";
+        document.getElementById("password").value = hod.password || "";
+        document.getElementById("department").value = hod.department || "";
+
+        document.getElementById("updateForm").style.display = "block";
+      } catch (error) {
+        console.error("Error fetching HOD details:", error);
+        alert("Error fetching HOD details. Check console for more information.");
+      }
+    }
+
+    async function updateHod() {
+      const hodId = document.getElementById("hodId").value.trim();
+
+      const updatedData = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        department: document.getElementById("department").value
+      };
+
+      try {
+        const response = await fetch(`http://localhost:8080/admin/updatehod/${hodId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(updatedData)
+        });
+
+        if (response.ok) {
+          alert("HOD updated successfully!");
+        } else {
+          alert("Failed to update HOD.");
+        }
+      } catch (error) {
+        console.error("Error updating HOD:", error);
+        alert("Error updating HOD.");
+      }
+    }
+  </script>
+</body>
+</html>

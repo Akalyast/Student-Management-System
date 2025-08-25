@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Delete Dean</title>
+</head>
+<body>
+  <h2>Delete Dean</h2>
+
+  <label>Enter Dean ID:</label>
+  <input type="text" id="deanId" required />
+  <button onclick="deleteDean()">Delete</button>
+
+  <p id="responseMessage" style="font-weight: bold;"></p>
+
+  <br><br>
+  <a href="admin-dashboard.html">🔙 Back to Admin Dashboard</a>
+
+  <script>
+    async function deleteDean() {
+      const deanId = document.getElementById("deanId").value.trim();
+      const messageElement = document.getElementById("responseMessage");
+
+      if (!deanId) {
+        alert("Please enter a Dean ID.");
+        return;
+      }
+
+      const confirmDelete = confirm(`Are you sure you want to delete dean with ID: ${deanId}?`);
+      if (!confirmDelete) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/admin/deleteDean/${deanId}`, {
+          method: "DELETE"
+        });
+
+        if (response.ok) {
+          messageElement.textContent = "✅ Dean deleted successfully!";
+          messageElement.style.color = "green";
+        } else if (response.status === 404) {
+          messageElement.textContent = "❌ Dean not found.";
+          messageElement.style.color = "red";
+        } else {
+          messageElement.textContent = "❌ Failed to delete Dean.";
+          messageElement.style.color = "red";
+        }
+      } catch (error) {
+        console.error("Error deleting Dean:", error);
+        messageElement.textContent = "❌ Error occurred while deleting Dean.";
+        messageElement.style.color = "red";
+      }
+    }
+  </script>
+</body>
+</html>

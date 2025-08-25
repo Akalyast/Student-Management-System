@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Student</title>
+</head>
+<body>
+  <h2>Add New Student</h2>
+
+  <form id="addStudentForm">
+    <label>Register Number: <input type="text" id="registerNumber" required /></label><br /><br />
+    <label>Full Name: <input type="text" id="name" required /></label><br /><br />
+    <label>Password: <input type="password" id="password" required /></label><br /><br />
+    <label>Date of Birth: <input type="date" id="dob" required /></label><br /><br />
+    <label>Department: <input type="text" id="department" required /></label><br /><br />
+    <label>Academic Info: <input type="text" id="academicInfo" required /></label><br /><br />
+    <label>Extra Activities: <input type="text" id="extraActivities" required /></label><br /><br />
+    
+    <button type="submit">Add Student</button>
+  </form>
+
+  <p id="message" style="font-weight: bold; margin-top: 20px;"></p>
+  <br />
+  <a href="admin-dashboard.html">⬅ Back to Dashboard</a>
+
+  <script>
+    const form = document.getElementById("addStudentForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        registerNumber: document.getElementById("registerNumber").value,
+        name: document.getElementById("name").value,
+        password: document.getElementById("password").value,
+        dob: document.getElementById("dob").value,
+        department: document.getElementById("department").value,
+        academicInfo: document.getElementById("academicInfo").value,
+        extraActivities: document.getElementById("extraActivities").value
+      };
+
+      try {
+        const response = await fetch("http://localhost:8080/admin/student/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          document.getElementById("message").textContent = "✅ Student Added Successfully!";
+          document.getElementById("message").style.color = "green";
+          form.reset();
+        } else {
+          const errorText = await response.text();
+          document.getElementById("message").textContent = "❌ Error: " + errorText;
+          document.getElementById("message").style.color = "red";
+        }
+      } catch (error) {
+        document.getElementById("message").textContent = "❌ Network Error: " + error.message;
+        document.getElementById("message").style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>

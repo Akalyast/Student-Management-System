@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login</title>
+</head>
+<body>
+  <h2>Admin Login</h2>
+  <form id="adminLoginForm">
+    <label>Username: <input type="text" id="adminUsername" required /></label><br />
+    <label>Password: <input type="password" id="adminPassword" required /></label><br />
+
+    <label>Captcha: 
+      <span id="captchaValue" style="font-weight: bold; padding: 5px;">1234</span>
+      <input type="text" id="adminCaptcha" required />
+    </label><br />
+
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="adminLoginMessage" style="color:red;"></p>
+
+   <script>
+    const form = document.getElementById("adminLoginForm");
+    const correctCaptcha = "1234"; // Change this to dynamic later if needed
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById("adminUsername").value;
+      const password = document.getElementById("adminPassword").value;
+      const captcha = document.getElementById("adminCaptcha").value;
+      const messageElem = document.getElementById("adminLoginMessage");
+
+      if (captcha !== correctCaptcha) {
+        messageElem.textContent = "Captcha Invalid";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:8080/admin/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.text();
+
+        if (result.trim().toLowerCase() === "login successful") {
+          localStorage.setItem("adminUsername", username);
+          window.location.href = "admin-dashboard.html";
+        } else {
+          messageElem.textContent = "Login Credentials are Invalid";
+        }
+      } catch (error) {
+        console.error("Login failed:", error);
+        messageElem.textContent = "Error connecting to server. Please try again.";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Delete HOD</title>
+</head>
+<body>
+  <h2>Delete HOD</h2>
+
+  <label>Enter HOD ID:</label>
+  <input type="text" id="hodId" required />
+  <button onclick="deleteHod()">Delete</button>
+
+  <p id="responseMessage" style="font-weight: bold;"></p>
+
+  <br><br>
+  <a href="admin-dashboard.html">🔙 Back to Admin Dashboard</a>
+
+  <script>
+    async function deleteHod() {
+      const hodId = document.getElementById("hodId").value.trim();
+      const messageElement = document.getElementById("responseMessage");
+
+      if (!hodId) {
+        alert("Please enter a HOD ID.");
+        return;
+      }
+
+      const confirmDelete = confirm(`Are you sure you want to delete HOD with ID: ${hodId}?`);
+      if (!confirmDelete) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/admin/deleteHod/${hodId}`, {
+          method: "DELETE"
+        });
+
+        if (response.ok) {
+          messageElement.textContent = "✅ HOD deleted successfully!";
+          messageElement.style.color = "green";
+        } else if (response.status === 404) {
+          messageElement.textContent = "❌ HOD not found.";
+          messageElement.style.color = "red";
+        } else {
+          messageElement.textContent = "❌ Failed to delete HOD.";
+          messageElement.style.color = "red";
+        }
+      } catch (error) {
+        console.error("Error deleting HOD:", error);
+        messageElement.textContent = "❌ Error occurred while deleting HOD.";
+        messageElement.style.color = "red";
+      }
+    }
+  </script>
+</body>
+</html>

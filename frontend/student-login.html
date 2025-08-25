@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Login</title>
+</head>
+<body>
+  <h2>Student Login</h2>
+
+  <form id="loginForm">
+    <label>Register Number:</label><br />
+    <input type="text" id="registerNumber" required /><br /><br />
+
+    <label>Password:</label><br />
+    <input type="password" id="password" required /><br /><br />
+
+    <label>Date of Birth (yyyy-mm-dd):</label><br />
+    <input type="text" id="dob" required /><br /><br />
+
+    <label>Captcha: What is 3 + 2?</label><br />
+    <input type="text" id="captcha" required /><br /><br />
+
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script>
+  document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const registerNumber = document.getElementById("registerNumber").value;
+    const password = document.getElementById("password").value;
+    const dob = document.getElementById("dob").value;
+    const captcha = document.getElementById("captcha").value;
+
+    if (captcha !== "5") {
+      document.getElementById("message").textContent = "Invalid Captcha!";
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/student/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ registerNumber, password, dob })
+      });
+
+      const text = await response.text();
+      document.getElementById("message").textContent = text;
+
+      if (text === "Login Successful") {
+        setTimeout(() => {
+          window.location.href = "student-dashboard.html?registerNumber=" + registerNumber;
+        }, 1000);
+      }
+
+    } catch (err) {
+      document.getElementById("message").textContent = "Error connecting to server.";
+    }
+  });
+</script>
+
+</body>
+</html>

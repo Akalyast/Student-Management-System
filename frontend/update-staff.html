@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Update Staff</title>
+</head>
+<body>
+  <h2>Update Staff Details</h2>
+
+  <label>Enter Staff ID:</label>
+  <input type="text" id="staffId" required />
+  <button onclick="fetchStaffDetails()">Fetch Details</button>
+
+  <div id="updateForm" style="display:none; margin-top: 20px;">
+    <h3>Edit Staff Information</h3>
+
+    <label>Name:</label><br>
+    <input type="text" id="name" required /><br><br>
+
+    <label>Password:</label><br>
+    <input type="text" id="password" required /><br><br>
+
+    <label>Date of Birth:</label><br>
+    <input type="date" id="dob" required /><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" id="email" required /><br><br>
+
+    <label>Department:</label><br>
+    <input type="text" id="department" required /><br><br>
+
+    <label>Classes Handled:</label><br>
+    <input type="text" id="classesHandled" /><br><br>
+
+    <label>Academic Information:</label><br>
+    <input type="text" id="academicInfo" /><br><br>
+
+    <label>Extra Activities:</label><br>
+    <input type="text" id="extraActivities" /><br><br>
+
+    <button onclick="updateStaff()">Update</button>
+  </div>
+
+  <br>
+  <a href="admin-dashboard.html">Back to Admin Dashboard</a>
+
+  <script>
+    async function fetchStaffDetails() {
+      const staffId = document.getElementById("staffId").value.trim();
+      if (!staffId) {
+        alert("Please enter a Staff ID.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:8080/admin/getStaff/${staffId}`);
+
+        if (response.status === 404) {
+          alert("Staff not found!");
+          document.getElementById("updateForm").style.display = "none";
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch staff details.");
+        }
+
+        const staff = await response.json();
+
+        // Populate form fields with fetched data
+        document.getElementById("name").value = staff.name || "";
+        document.getElementById("password").value = staff.password || "";
+        document.getElementById("dob").value = staff.dob || "";
+        document.getElementById("email").value = staff.email || "";
+        document.getElementById("department").value = staff.department || "";
+        document.getElementById("classesHandled").value = staff.classesHandled || "";
+        document.getElementById("academicInfo").value = staff.academicInfo || "";
+        document.getElementById("extraActivities").value = staff.extraActivities || "";
+
+        document.getElementById("updateForm").style.display = "block";
+      } catch (error) {
+        console.error("Error fetching staff details:", error);
+        alert("Error fetching staff details. Check console for more information.");
+      }
+    }
+
+    async function updateStaff() {
+      const staffId = document.getElementById("staffId").value.trim();
+
+      const updatedData = {
+        name: document.getElementById("name").value,
+        password: document.getElementById("password").value,
+        dob: document.getElementById("dob").value,
+        email: document.getElementById("email").value,
+        department: document.getElementById("department").value,
+        classesHandled: document.getElementById("classesHandled").value,
+        academicInfo: document.getElementById("academicInfo").value,
+        extraActivities: document.getElementById("extraActivities").value
+      };
+
+      try {
+        const response = await fetch(`http://localhost:8080/admin/updateStaff/${staffId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(updatedData)
+        });
+
+        if (response.ok) {
+          alert("Staff updated successfully!");
+        } else {
+          alert("Failed to update staff.");
+        }
+      } catch (error) {
+        console.error("Error updating staff:", error);
+        alert("Error updating staff.");
+      }
+    }
+  </script>
+</body>
+</html>

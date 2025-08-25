@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Management System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <img src="college-logo.png" alt="College Logo" class="logo" />
+    <h1>ABC College of Engineering</h1>
+    <div class="roles">
+      <div onclick="navigate('student-login.html')">
+        <img src="icons/student.png" alt="Student" />
+        <p>Student</p>
+      </div>
+      <div onclick="navigate('staff-login.html')">
+        <img src="icons/staff.png" alt="Staff" />
+        <p>Staff</p>
+      </div>
+      <div onclick="navigate('admin-login.html')">
+        <img src="icons/admin.png" alt="Admin" />
+        <p>Admin</p>
+      </div>
+      <div onclick="navigate('hod-login.html')">
+        <img src="icons/hod.png" alt="hod" />
+        <p>Head Of Department</p>
+      </div>
+      <div onclick="navigate('dean-login.html')">
+        <img src="icons/dean.png" alt="dean" />
+        <p>Dean</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    function navigate(page) {
+      window.location.href = page;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Staff Dashboard</title>
+</head>
+<body>
+  <h2>Welcome to Staff Dashboard</h2>
+
+  <p id="welcomeText"></p>
+
+  <ul>
+    <li><a href="#" onclick="loadData('personal')">Personal Information</a></li>
+    <li><a href="#" onclick="loadData('academic')">Academic Information</a></li>
+    <li><a href="#" onclick="loadData('extra')">Extracurricular Activities</a></li>
+  </ul>
+
+  <button onclick="goBack()">Logout</button>
+
+  <div id="dataContainer"></div>
+
+  <script>
+    // Get staffId from URL parameters
+    const staffId = new URLSearchParams(window.location.search).get("staffId");
+    document.getElementById("welcomeText").textContent = "Logged in as: " + staffId;
+
+    // Logout button function
+    function goBack() {
+      window.location.href = "staff-login.html";
+    }
+
+    // Function to load data based on the type selected
+    async function loadData(type) {
+      let endpoint = "";
+
+      if (type === "personal") {
+        endpoint = "http://localhost:8080/staff/personal/" + staffId;
+      } else if (type === "academic") {
+        endpoint = "http://localhost:8080/staff/academic-info/" + staffId;
+      } else if (type === "extra") {
+        endpoint = "http://localhost:8080/staff/extra-info/" + staffId;
+      }
+
+      try {
+        const response = await fetch(endpoint);
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        if (type === "personal") {
+          // Personal Info is returned as JSON
+          const data = await response.json();
+          let html = "<h3>Personal Information</h3><ul>";
+          for (const key in data) {
+            html += `<li><strong>${key}</strong>: ${data[key]}</li>`;
+          }
+          html += "</ul>";
+          document.getElementById("dataContainer").innerHTML = html;
+        } else {
+          // Academic & Extra info returned as plain text
+          const text = await response.text();
+          document.getElementById("dataContainer").innerHTML =
+            `<h3>${type.charAt(0).toUpperCase() + type.slice(1)} Information</h3><p>${text}</p>`;
+        }
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        document.getElementById("dataContainer").textContent = "Failed to load data.";
+      }
+    }
+  </script>
+</body>
+</html>

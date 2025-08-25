@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Students</title>
+</head>
+<body>
+  <h2>All Students</h2>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Register No</th>
+        <th>Name</th>
+        <th>DOB</th>
+        <th>Department</th>
+        <th>Academic Info</th>
+        <th>Extra Activities</th>
+      </tr>
+    </thead>
+    <tbody id="studentTableBody"></tbody>
+  </table>
+
+  <br>
+  <a href="admin-dashboard.html">⬅ Back to Admin Dashboard</a>
+
+  <script>
+    async function loadStudents() {
+      try {
+        const res = await fetch("http://localhost:8080/admin/student/all");
+        if (!res.ok) throw new Error("Failed to fetch students");
+        
+        const students = await res.json();
+        const tbody = document.getElementById("studentTableBody");
+        tbody.innerHTML = "";
+
+        students.forEach(student => {
+          const row = `<tr>
+            <td>${student.registerNumber}</td>
+            <td>${student.name}</td>
+            <td>${student.dob}</td>
+            <td>${student.department}</td>
+            <td>${student.academicInfo}</td>
+            <td>${student.extraActivities}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      } catch (err) {
+        alert("❌ Error fetching student data: " + err.message);
+      }
+    }
+
+    loadStudents();
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Dean</title>
+</head>
+<body>
+  <h2>Add Dean</h2>
+
+  <form id="addDeanForm">
+    <label>Dean ID:</label>
+    <input type="text" id="deanId" required><br><br>
+
+    <label>Username:</label>
+    <input type="text" id="username" required><br><br>
+
+    <label>Password:</label>
+    <input type="password" id="password" required><br><br>
+
+    <button type="submit">Add Dean</button>
+  </form>
+
+  <p id="responseMessage" style="color: green; font-weight: bold;"></p>
+
+  <br><br>
+  <a href="admin-dashboard.html">🔙 Back to Admin Dashboard</a>
+
+  <script>
+    document.getElementById("addDeanForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const deanData = {
+        deanId: document.getElementById("deanId").value,
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value
+      };
+
+      try {
+        const response = await fetch("http://localhost:8080/admin/dean/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(deanData)
+        });
+
+        const messageElement = document.getElementById("responseMessage");
+
+        if (response.ok) {
+          messageElement.textContent = "✅ Dean added successfully!";
+          messageElement.style.color = "green";
+          document.getElementById("addDeanForm").reset();
+        } else {
+          messageElement.textContent = "❌ Failed to add Dean.";
+          messageElement.style.color = "red";
+        }
+
+      } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("responseMessage").textContent = "❌ Error occurred while adding Dean.";
+        document.getElementById("responseMessage").style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>
